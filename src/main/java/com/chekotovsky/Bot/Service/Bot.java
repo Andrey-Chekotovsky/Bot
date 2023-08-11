@@ -47,7 +47,7 @@ public class Bot extends TelegramLongPollingBot {
         rowsInline.add(rowInline);
         taskMarkup.setKeyboard(rowsInline);
     }
-    private static TimerDependedBoolean timerBoolean;
+    private static final TimerDependedBoolean timerBoolean;
     static {
         timerBoolean = new TimerDependedBoolean(true);
         timerBoolean.setTimePeriodInMillis(60000L);
@@ -88,44 +88,26 @@ public class Bot extends TelegramLongPollingBot {
     private void processMessage(Update update)
     {
         Long chatId = update.getMessage().getChatId();
-        Long userId = update.getMessage().getFrom().getId();
+        long userId = update.getMessage().getFrom().getId();
         String message = update.getMessage().getText();
         if (message.charAt(0) != '/')
             return;
-        switch (message)
-        {
-            case "/start":
-                startRequest(chatId);
-                break;
-            case "/task":
-                taskRequest(update.getMessage().getReplyToMessage(), chatId,
-                        userId);
-                break;
-            case "/linkGroup":
-                linkGroupRequest(chatId, update.getMessage().getReplyToMessage());
-                break;
-            case "/unlinkGroup":
-                sendUnlinkMenu(chatId);
-                break;
-            case "/linkedGroups":
-                sendAllGroups(chatId);
-                break;
-            case "/manual":
-                sendMessage(chatId, BotTextRepository.getBotManual());
-                break;
-            case "/getClearPeriod":
-                sendMessage(chatId, BotTextRepository.getClearPeriodMessage(timerBoolean.getTimePeriodInMillis()));
-                break;
-            case "/autoSendTaskForAllEnable":
-                autoSendTaskForAllRequest(userId, chatId, true );
-                break;
-            case "/autoSendTaskForAllDisable":
-                autoSendTaskForAllRequest(userId, chatId, false );
-                break;
-            default:
-                if(message.contains("/setClearPeriod"))
+        switch (message) {
+            case "/start" -> startRequest(chatId);
+            case "/task" -> taskRequest(update.getMessage().getReplyToMessage(), chatId,
+                    userId);
+            case "/linkGroup" -> linkGroupRequest(chatId, update.getMessage().getReplyToMessage());
+            case "/unlinkGroup" -> sendUnlinkMenu(chatId);
+            case "/linkedGroups" -> sendAllGroups(chatId);
+            case "/manual" -> sendMessage(chatId, BotTextRepository.getBotManual());
+            case "/getClearPeriod" ->
+                    sendMessage(chatId, BotTextRepository.getClearPeriodMessage(timerBoolean.getTimePeriodInMillis()));
+            case "/autoSendTaskForAllEnable" -> autoSendTaskForAllRequest(userId, chatId, true);
+            case "/autoSendTaskForAllDisable" -> autoSendTaskForAllRequest(userId, chatId, false);
+            default -> {
+                if (message.contains("/setClearPeriod"))
                     setClearTime(message, chatId);
-                break;
+            }
         }
     }
     private void processCallBack(Update update)
@@ -154,8 +136,7 @@ public class Bot extends TelegramLongPollingBot {
         else if (callbackData.contains(BotTextRepository.getSendPrefix()))
         {
             sendRequest(callbackData,
-                    update.getCallbackQuery().getMessage().getReplyToMessage().getText(),
-                    update.getCallbackQuery().getMessage().getMessageId());
+                    update.getCallbackQuery().getMessage().getReplyToMessage().getText());
         }
         else if (callbackData.contains(BotTextRepository.getUnlinkPrefix()))
         {
@@ -199,14 +180,14 @@ public class Bot extends TelegramLongPollingBot {
         {
             userConfigDao.insert(new UserConfig(userId));
         }
-        sendMailingTaskMenu(chatId, repliedMessage.getMessageId(), userId);
+        sendMailingTaskMenu(chatId, repliedMessage.getMessageId());
     }
     private void sendAllGroups(long chatId) {
         List<GroupId> groupIds = groupIdDao.selectByChatId(chatId);
         StringBuilder sb = new StringBuilder(BotTextRepository.getAllGroupsMessage());
         for (int i = 0; i < groupIds.size(); i++)
         {
-            sb.append((i + 1) + ". " + groupIds.get(i).getGroupName() + "\n");
+            sb.append(i + 1).append(". ").append(groupIds.get(i).getGroupName()).append("\n");
         }
         sendMessage(chatId, sb.toString());
     }
@@ -215,16 +196,16 @@ public class Bot extends TelegramLongPollingBot {
         StringBuilder sb = new StringBuilder(message);
         sb.delete(0, 16);
         String period = sb.toString();
-        timerBoolean.setTimePeriodInMillis(Long.valueOf(period) * 60 * 1000);
+        timerBoolean.setTimePeriodInMillis(Long.parseLong(period) * 60 * 1000);
         sendMessage(chatId, BotTextRepository.getClearPeriodChangedMessage());
     }
 
-    private void sendRequest(String callbackData, String message, int messageId)
+    private void sendRequest(String callbackData, String message)
     {
         StringBuilder sb = new StringBuilder(callbackData);
         sb.delete(0, BotTextRepository.getSendPrefix().length());
         String groupId = sb.toString();
-        sendMessage(Long.valueOf(groupId), message, taskMarkup);
+        sendMessage(Long.parseLong(groupId), message, taskMarkup);
 
     }
     private void unlinkRequest(long chatId, String callbackData, int messageId, InlineKeyboardMarkup keyboardMarkup)
@@ -282,7 +263,7 @@ public class Bot extends TelegramLongPollingBot {
         for(int i = 0; i < groupIds.size(); i++)
         {
             button.setText(groupIds.get(i).getGroupName());
-            button.setCallbackData(prefix + String.valueOf(groupIds.get(i).getGroupId()));
+            button.setCallbackData(prefix + groupIds.get(i).getGroupId());
             rowInline.add(button);
             button = new InlineKeyboardButton();
             if (i % 2 == 1 || i == groupIds.size() - 1)
@@ -305,7 +286,7 @@ public class Bot extends TelegramLongPollingBot {
         markup.setKeyboard(rowsInline);
         sendMessage(chatID, BotTextRepository.getChooseUnlinkChatsMessage(), markup);
     }
-    private void sendMailingTaskMenu(long chatId, int taskMessageId, long userId){
+    private void sendMailingTaskMenu(long chatId, int taskMessageId){
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = keyboardWithLinkedGroups(chatId, BotTextRepository.getSendPrefix());
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
@@ -422,7 +403,7 @@ public class Bot extends TelegramLongPollingBot {
     {
         List<GroupId> groupIds = groupIdDao.selectByChatId(chatID);
         for(GroupId groupId : groupIds) {
-            sendMessage(Long.valueOf(groupId.getGroupId()), text, markup);
+            sendMessage(groupId.getGroupId(), text, markup);
         }
     }
     private void sendMessage(long chatID, String text, InlineKeyboardMarkup markup)
@@ -447,7 +428,7 @@ public class Bot extends TelegramLongPollingBot {
         }
         catch (TelegramApiException e)
         {
-
+            log.error("Не могу удалить ссообщение. Ошибка: " + e.getMessage());
         }
     }
 }

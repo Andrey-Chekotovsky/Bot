@@ -3,13 +3,10 @@ package com.chekotovsky.Bot.Other;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Calendar;
-import java.util.Date;
 
 public class TimerDependedBoolean {
 
-    private boolean value = true;
-    private long lastChanged = 0L;
+    private boolean value;
     private long lastActivation = 0L;
     @Getter
     @Setter

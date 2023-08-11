@@ -17,11 +17,7 @@ public class GroupIdDao {
         return jdbcTemplate.query("SELECT * FROM groups WHERE chat_id = ?;", new Object[]{chatId},
                 new GroupIdMapper());
     }
-    public void update(GroupId groupId)
-    {
-        jdbcTemplate.update("UPDATE groups SET chat_id = ?, group_id = ?, group_name = ? WHERE id = ?;",
-                groupId.getChatId(), groupId.getGroupId(), groupId.getGroupName(), groupId.getId());
-    }
+
     public void insert(GroupId groupId) throws DuplicateKeyException
     {
         jdbcTemplate.update("INSERT INTO groups(chat_id, group_id, group_name) VALUES (?, ?, ?);",

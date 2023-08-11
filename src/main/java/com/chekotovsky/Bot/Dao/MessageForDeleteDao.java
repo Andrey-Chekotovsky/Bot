@@ -1,15 +1,11 @@
 package com.chekotovsky.Bot.Dao;
 
-import com.chekotovsky.Bot.Models.GroupId;
 import com.chekotovsky.Bot.Models.MessageForDelete;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 @Component
 @RequiredArgsConstructor

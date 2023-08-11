@@ -336,7 +336,6 @@ public class Bot extends TelegramLongPollingBot {
                                          String message)
     {
         editMessage(chatId, messageId, "<s>" + message + "</s>");
-        editMessageMarkup(chatId, callbackData, markup, messageId);
         messageForDeleteDao.insert(new MessageForDelete().toBuilder()
                 .chatId(chatId)
                 .messageId(messageId)

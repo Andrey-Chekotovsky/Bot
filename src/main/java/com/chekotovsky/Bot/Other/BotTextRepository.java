@@ -5,7 +5,7 @@ import lombok.Getter;
 
 public class BotTextRepository {
     @Getter
-    static private String botManual = """
+    static private final String botManual = """
             Charlie бот содержит следующие команды:
             Техничесикие:
             /manual - выдает пользователю весь список команд бота.
@@ -16,43 +16,53 @@ public class BotTextRepository {
             /unlinkGroup - позволяет отвязать канал от чата.
             /linkedGroups - позволяет узнать какие каналы в данный момент привязаны к данному чату.
             Настройки:
-            
+            /setClearPeriod - позволяет настроить период между чистками сообщений. В сообщении с командой через пробел после нее укажите раз в сколько минут необходимо чистить сообзения.
+            /getClearPeriod - позволяет ухнать текузий период между чистками соообщений.
             """;
     @Getter
-    static private String noReplyToTaskMessage = "Мне необходимо, чтобы вы ответили на сообщение, которое обозначается как задача";
+    static private final String noReplyToTaskMessage = "Мне необходимо, чтобы вы ответили на сообщение, которое обозначается как задача";
     @Getter
-    static private String wrongLinkGroupMessage = "Чтобы я мог присоеденить канал /linkGroup должен содержать ответ на сообщение пересланное из этого чата.";
+    static private final String wrongLinkGroupMessage = "Чтобы я мог присоеденить канал /linkGroup должен содержать ответ на сообщение пересланное из этого чата.";
     @Getter
-    static private String duplicateLinkGroupMessage = "Данный канал уже был присоединен к вашему чату";
+    static private final String duplicateLinkGroupMessage = "Данный канал уже был присоединен к вашему чату";
     @Getter
-    static private String successfullLinkGroupMessage = "Канадл успешно присоединен к чату";
+    static private final String successfullLinkGroupMessage = "Канадл успешно присоединен к чату";
     @Getter
-    static private String successfullUnlinkGroupMessage = "Канадл был успешно отсоединен от вашего чата";
+    static private final String successfullUnlinkGroupMessage = "Канадл был успешно отсоединен от вашего чата";
     @Getter
-    static private String chooseUnlinkChatsMessage = "Выберите каналы которые хотите открепить";
+    static private final String chooseUnlinkChatsMessage = "Выберите каналы которые хотите открепить";
     @Getter
-    static private String startMessage = "Приветствую, мое имя Чарли. Я помогаю с рассылкой задач. Если необходимы подробности моей работы, используйте команду /manual";
+    static private final String startMessage = "Приветствую, мое имя Чарли. Я помогаю с рассылкой задач. Если необходимы подробности моей работы, используйте команду /manual";
     @Getter
-    static private String chooseChatsForTaskMessage = "Выберите каналы, в которые будет переслано задание";
+    static private final String chooseChatsForTaskMessage = "Выберите каналы, в которые будет переслано задание";
     @Getter
-    static private String unlinkPrefix = "UNLINK_";
+    static private final String unlinkPrefix = "UNLINK_";
     @Getter
-    static private String sendPrefix = "SEND_";
+    static private final String sendPrefix = "SEND_";
     @Getter
-    static private String endCallback = "END";
+    static private final String endCallback = "END";
     @Getter
-    static private String taskForAllCallback = "TASK_FOR_ALL";
+    static private final String taskForAllCallback = "TASK_FOR_ALL";
     @Getter
-    static private String taskDoneCallback = "TASK_DONE";
+    static private final String taskDoneCallback = "TASK_DONE";
     @Getter
-    static private String endButton = "Закончить";
+    static private final String endButton = "Закончить";
     @Getter
-    static private String taskDoneButton = "Задача выполнена";
+    static private final String taskDoneButton = "Задача выполнена";
     @Getter
-    static private String sendAllButton = "Послать всем";
+    static private final String sendAllButton = "Послать всем";
     @Getter
-    static private String taskSharingMessage = "Выберите каналы, которые должны получить сообщение. После нажмите \""+ endButton +"\" и сообщение  исчезнет";
-
+    static private final String taskSharingMessage = "Выберите каналы, которые должны получить сообщение. После нажмите \""+ endButton +"\" и сообщение  исчезнет";
+    @Getter
+    static private final String clearPeriodChangedMessage = "Пероиод между чистками сообщений был изменен";
+    @Getter
+    static private final String allGroupsMessage = "Все каналы присоединенные к чату:\n";
+    @Getter
+    static private final String userConfigSuccessfullyChangedMessage = "Все каналы присоединенные к чату:\n";
+    static public String getClearPeriodMessage(long timeInMillis)
+    {
+        return "Текущий период между чистками сообщений " + timeInMillis / 1000 / 60 + " мин";
+    }
 
 
 

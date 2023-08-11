@@ -10,7 +10,7 @@ public class MessageDeleteMapper implements RowMapper<MessageForDelete> {
     @Override
     public MessageForDelete mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new MessageForDelete().toBuilder()
-                .id(rs.getLong("id"))
+                .id(rs.getInt("id"))
                 .messageId(rs.getInt("message_id"))
                 .chatId(rs.getLong("chat_id"))
                 .build();

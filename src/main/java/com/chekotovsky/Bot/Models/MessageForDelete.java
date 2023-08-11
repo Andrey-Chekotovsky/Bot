@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageForDelete {
-    long id;
+    int id;
     private int messageId;
     private Long chatId;
 }

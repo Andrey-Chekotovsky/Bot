@@ -12,6 +12,7 @@ public class UserConfigMapper implements RowMapper<UserConfig> {
           UserConfig userConfig = new UserConfig().toBuilder()
                 .id(rs.getInt("id"))
                 .userId(rs.getInt("user_id"))
+                  .taskString(rs.getString("task_string"))
                 .build();
           userConfig.setAuthorities(rs.getString("authorities"));
           return userConfig;

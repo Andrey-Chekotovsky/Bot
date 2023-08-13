@@ -18,12 +18,12 @@ public class UserConfigDao {
     }
     public void updateAuthorities(UserConfig userConfig)
     {
-        jdbcTemplate.update("UPDATE user_configs SET authorities = ? WHERE user_id = ?;",
-                userConfig.getAuthorities(), userConfig.getUserId());
+        jdbcTemplate.update("UPDATE user_configs SET authorities = ?, task_string = ? WHERE user_id = ?;",
+                userConfig.getAuthorities(), userConfig.getTaskString(), userConfig.getUserId());
     }
-    public void insert(UserConfig message) throws DuplicateKeyException
+    public void insert(UserConfig userConfig) throws DuplicateKeyException
     {
-        jdbcTemplate.update("INSERT INTO user_configs(user_id, authorities) VALUES (?, ?);",
-                message.getUserId(), message.getAuthorities());
+        jdbcTemplate.update("INSERT INTO user_configs(user_id, authorities, task_string) VALUES (?, ?, ?);",
+                userConfig.getUserId(), userConfig.getAuthorities(), userConfig.getTaskString());
     }
 }

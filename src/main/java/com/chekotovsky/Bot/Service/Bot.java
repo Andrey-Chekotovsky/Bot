@@ -90,7 +90,7 @@ public class Bot extends TelegramLongPollingBot {
         Long chatId = update.getMessage().getChatId();
         long userId = update.getMessage().getFrom().getId();
         String message = update.getMessage().getText();
-        if (message.charAt(0) != '/')
+        if (message.charAt(0) != '/' && message.length() > 10)
             return;
         switch (message) {
             case "/start" -> startRequest(chatId);
@@ -104,9 +104,17 @@ public class Bot extends TelegramLongPollingBot {
                     sendMessage(chatId, BotTextRepository.getClearPeriodMessage(timerBoolean.getTimePeriodInMillis()));
             case "/autoSendTaskForAllEnable" -> autoSendTaskForAllRequest(userId, chatId, true);
             case "/autoSendTaskForAllDisable" -> autoSendTaskForAllRequest(userId, chatId, false);
+            case "/canselCustomTaskMessage" -> canselCustomTaskMessageRequest(chatId, userId);
             default -> {
                 if (message.contains("/setClearPeriod"))
                     setClearTime(message, chatId);
+                else if (message.contains("/setCustomTaskMessage")) {
+                    setCustomTaskMessageRequest(chatId, userId, message);
+                } else {
+                    UserConfig userConfig = userConfigDao.selectByUserId(userId);
+                    if (userConfig.getHasTaskString() && userConfig.getTaskString().equals(message))
+                        taskRequest(update.getMessage().getReplyToMessage(), chatId, userId);
+                }
             }
         }
     }
@@ -145,6 +153,39 @@ public class Bot extends TelegramLongPollingBot {
                     update.getCallbackQuery().getMessage().getReplyMarkup());
         }
     }
+    private void setCustomTaskMessageRequest(long chatId, long userId, String message)
+    {
+        UserConfig userConfig = new UserConfig();
+        StringBuilder sb = new StringBuilder(message);
+        sb.delete(0, "/setCustomTaskMessage".length() + 1);
+        try {
+            userConfig = userConfigDao.selectByUserId(userId);
+            userConfig.setTaskString(sb.toString());
+            userConfigDao.updateAuthorities(userConfig);
+        }
+        catch (NotFoundException e)
+        {
+            userConfig.setUserId(userId);
+            userConfig.setTaskString(sb.toString());
+            userConfigDao.insert(userConfig);
+        }
+        sendMessage(chatId, "Пользовательские настройки сообщения для постановки задач были установелны");
+    }
+    private void canselCustomTaskMessageRequest(long chatId, long userId)
+    {
+        UserConfig userConfig = new UserConfig();
+        try {
+            userConfig = userConfigDao.selectByUserId(userId);
+            userConfig.setHasTaskString(false);
+            userConfigDao.updateAuthorities(userConfig);
+        }
+        catch (NotFoundException e)
+        {
+            userConfig.setUserId(userId);
+            userConfigDao.insert(userConfig);
+        }
+        sendMessage(chatId, "Пользовательские настройки сообщения для постановки задач были отменены");
+    }
     private void autoSendTaskForAllRequest(long userId, long chatId, Boolean autoSendTaskForAll)
     {
         UserConfig userConfig = new UserConfig();
@@ -158,7 +199,7 @@ public class Bot extends TelegramLongPollingBot {
         {
             userConfig.setUserId(userId);
             userConfig.setAutoSendForAll(autoSendTaskForAll);
-            userConfigDao.insert(new UserConfig(userId));
+            userConfigDao.insert(userConfig);
         }
         sendMessage(chatId, "Настройки успешно обновлены");
     }
